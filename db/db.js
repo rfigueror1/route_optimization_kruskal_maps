@@ -39,7 +39,8 @@ var create_transport = function(name, lat, longitud, company, callback){
 }
 
 var update_transport = function(id, lat, longitud, callback){
-	Transport.where({_id:id}).update({$set: {lat:lat,longitud:longitud}}).exec(callback)
+	console.log(lat);
+	Transport.where({_id:id}).update({$set: {lat:Number(lat),longitud:Number(longitud)}}).exec(callback)
 }
 
 module.exports = {locate_transport, create_transport, update_transport}; 

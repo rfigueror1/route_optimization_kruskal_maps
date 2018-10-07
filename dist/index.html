@@ -12,9 +12,9 @@
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+        height: 80%;
+        margin: 10;
+        padding: 10;
       }
     </style>
   </head>
@@ -24,7 +24,8 @@
 		var map, marker, infoWindow;
 		var SYDNEY = {lat: -33.8798, lng: 151.2089};
 		var OPERA_HOUSE = {lat: -33.8570, lng: 151.2150};
-		function initMap() {
+
+    function initMap() {
   		// Create a map in the usual way.
   		map = new google.maps.Map(
       	document.getElementById('map'), {center: SYDNEY, zoom: 12});

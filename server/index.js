@@ -36,4 +36,29 @@ app.get('/trucks/:id', function(req, res){
   })
 });
 
+app.get('/trucks/:company', function(req, res){
+  var company = req.params.company.replace(':','');
+  db.show_ids_company(company, (err,results) => {
+    if(err){
+      console.log(err)
+    }else{
+      res.json(results);
+    }
+  })
+});
+
+
+app.put('/trucks:id', function(req, res){
+  var id = Number(req.params.id.replace(':',''));
+  var lat = req.body.lat;
+  var longitud = req.body.longitud;
+  db.update_transport(id, lat, longitud, (err,results) => {
+    if(err){
+      console.log(err)
+    }else{
+      res.status(200).send();
+    }
+  })
+});
+
 app.listen(3003);
