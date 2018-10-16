@@ -14,6 +14,8 @@ const max_lng = -98.888515
 
 var list_items = [];
 
+//todavia esta pendiente salvar en formato csv
+
 const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, min_weight, max_weight, number_items) => {
  var list_of_items = [];
   for (var i = 0; i < number_items; i++) {
