@@ -10,9 +10,9 @@ db.once('open', function() {
 });
 
 var transport_schema = new mongoose.Schema({
-  name: String,
   lat: Number,
-  longitud: Number,
+  lng: Number,
+  text: String,
   company: String
 });
 
@@ -30,21 +30,23 @@ var show_ids_company = function(company, callback){
 	Transport.find({company:company}).exec(callback);
 }
 
-var create_transport = function(name, lat, longitud, company, callback){
-	var temp = new Transport({ name:name, lat:lat, longitud:longitud, company:company});
+var create_transport = function(lat, lng, text, company, callback){
+	var temp = new Transport({ lat:lat, lng:lng, text:text, company:company});
 	temp.save(function (err, temp) {
     if (err) return console.error(err);
     else return console.log('element saved')
   });
 }
 
-var update_transport = function(id, lat, longitud, callback){
-	console.log(lat);
-	Transport.where({_id:id}).update({$set: {lat:Number(lat),longitud:Number(longitud)}}).exec(callback)
+var update_transport = function(id, lat, lng, callback){
+	Transport.where({_id:id}).update({$set: {lat:Number(lat),lng:Number(lng)}}).exec(callback)
 }
 
-module.exports = {locate_transport, create_transport, update_transport}; 
+module.exports = {locate_transport, create_transport, update_transport, show_ids_company}; 
 
 // update_transport(1, -35.871852, 153.222652, console.log);
 // locate_transport(1, console.log);
-show_ids_company('FirstTruckCompany', console.log);
+//show_ids_company('FirstTruckCompany', console.log);
+
+create_transport(19.434940, -99.195697, 'chofer: Ricardo Figueroa', 'FirstTruckCompany') 
+create_transport(19.434940, -99.205697, 'chofer: Sergio Rodriguez', 'FirstTruckCompany')

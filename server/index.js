@@ -12,11 +12,11 @@ app.get('/', function(req, res){
 });
 
 app.post('/trucks', function(req, res){
-  var name = req.params.name;
   var lat = req.params.lat;
-  var longitud = req.params.longitud;
+  var lng = req.params.lng;
+  var text = req.params.text;
   var company = req.params.company;
-  db.create_transport(name, lat, longitud, company, (err,res) => {
+  db.create_transport(lat, lng, text, company, (err,res) => {
   	if(err){
   		console.log(err)
   	}else{
@@ -36,7 +36,7 @@ app.get('/trucks/:id', function(req, res){
   })
 });
 
-app.get('/trucks/:company', function(req, res){
+app.get('/trucks/companies/:company', function(req, res){
   var company = req.params.company.replace(':','');
   db.show_ids_company(company, (err,results) => {
     if(err){
@@ -51,8 +51,8 @@ app.get('/trucks/:company', function(req, res){
 app.put('/trucks:id', function(req, res){
   var id = Number(req.params.id.replace(':',''));
   var lat = req.body.lat;
-  var longitud = req.body.longitud;
-  db.update_transport(id, lat, longitud, (err,results) => {
+  var lng = req.body.lng;
+  db.update_transport(id, lat, lng, (err,results) => {
     if(err){
       console.log(err)
     }else{
