@@ -33,7 +33,7 @@ var address_lookup = function(latlng,callback){
   	});
 }
 
-https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
+//https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
 
 var lat_long_lookup = function(address,callback){
   axios.get('https://maps.googleapis.com/maps/api/geocode/json',{
@@ -50,5 +50,14 @@ var lat_long_lookup = function(address,callback){
 }
 
 //ejemplo
-lat_long_lookup('Tecnovidrio', console.log);
-// get_travel_distance_time('Mexico City', 'San Francisco', console.log);
+var prueba_coordenadas = '40.714224,-73.961452'
+
+var array = []
+
+var resultado_prueba = '';
+address_lookup(prueba_coordenadas, function(result){
+  array.push(result.formatted_address);
+  console.log(array)
+});
+
+module.exports = {lat_long_lookup:lat_long_lookup};
