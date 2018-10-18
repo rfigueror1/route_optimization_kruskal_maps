@@ -17,6 +17,7 @@ var list_items = [];
 //todavia esta pendiente salvar en formato csv
 
 const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, min_weight, max_weight, number_items) => {
+
  var list_of_items = [];
   for (var i = 0; i < number_items; i++) {
     var lat = Math.random() * (max_lat - min_lat) + min_lat;
@@ -40,6 +41,10 @@ const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, 
     console.log(list_of_items)
   }
 	Promise.all(list_of_items).then(function(item) {
+    fs.appendFile('data.csv', 'Address|' + 'Volume|' + 'Weight' + '\r\n', function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+    });
     item.forEach(function(item) {
       	item1 = {}
       	item1.address = item;
@@ -48,13 +53,14 @@ const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, 
 	  	item1.volume = volume;
 	  	item1.weight = weight;
      	// list_items.push
-     	fs.appendFile('data.csv', JSON.stringify(item1), function (err) {
+     	fs.appendFile('data.csv', item1.address+'|'+item1.volume+'|'+ item1.weight + '\r\n', function (err) {
   			if (err) throw err;
   			console.log('Saved!');
 		});
     });
   })
+
 }
 
-simulation(19.197092, 19.577532, -99.424622, -98.888515, 30, 100, 50, 200, 50);
+simulation(19.197092, 19.577532, -99.424622, -98.888515, 30, 100, 50, 200, 200);
 
