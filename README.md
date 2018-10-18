@@ -8,4 +8,6 @@ POST: `curl -d '{"name":"third_truck", "lat":"-33.871852", "longitud":"150.000",
 
 PUT: `curl -d '{"_id":"1", "lat":"-40.871852", "longitud":"150.000"}' -H "Content-Type: application/json" -X PUT http://localhost:3003/trucks:1`
 
+To compile run `npm run compile`
 
+To start the server run `npm run start` and visit localhost:3003 
