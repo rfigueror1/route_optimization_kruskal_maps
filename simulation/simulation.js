@@ -11,7 +11,6 @@ const min_lat = 19.197092
 const min_lng = -99.424622
 const max_lat = 19.577532
 const max_lng = -98.888515
-
 var list_items = [];
 
 //todavia esta pendiente salvar en formato csv
@@ -63,4 +62,6 @@ const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, 
 }
 
 simulation(19.197092, 19.577532, -99.424622, -98.888515, 30, 100, 50, 200, 200);
+
+//Pendiente generar el grafo con el cual correremos la simulación.
 

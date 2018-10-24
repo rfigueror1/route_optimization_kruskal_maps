@@ -50,14 +50,16 @@ var lat_long_lookup = function(address,callback){
 }
 
 //ejemplo
-var prueba_coordenadas = '40.714224,-73.961452'
+// var prueba_coordenadas = '40.714224,-73.961452'
 
-var array = []
+// var array = []
 
-var resultado_prueba = '';
-address_lookup(prueba_coordenadas, function(result){
-  array.push(result.formatted_address);
-  console.log(array)
-});
+// var resultado_prueba = '';
+// address_lookup(prueba_coordenadas, function(result){
+//   array.push(result.formatted_address);
+//   console.log(array)
+// });
 
-module.exports = {lat_long_lookup:lat_long_lookup};
+get_travel_distance_time("Av 565 145, San Juan de Aragón II Secc, 07969 Ciudad de México, CDMX, Mexico","Av. Lomas de San Juan 21, 52768 San Juan Yautepec, Méx., Mexico", console.log);
+
+module.exports = {lat_long_lookup:lat_long_lookup, get_travel_distance_time:get_travel_distance_time};
