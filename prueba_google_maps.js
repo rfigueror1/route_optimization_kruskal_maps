@@ -10,7 +10,7 @@ var get_travel_distance_time = function(origin,destination,callback){
       	'key': api_key_distance_matrix
     	}})
   	.then(function (response) {
-    	callback(response.data.rows[0].elements);
+    	callback(response.data.rows[0].elements[0]['duration']);
   	})
   	.catch(function (error) {
     	console.log(error,'errorzaso');

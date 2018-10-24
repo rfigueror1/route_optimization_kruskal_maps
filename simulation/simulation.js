@@ -16,7 +16,6 @@ var list_items = [];
 //todavia esta pendiente salvar en formato csv
 
 const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, min_weight, max_weight, number_items) => {
-
  var list_of_items = [];
   for (var i = 0; i < number_items; i++) {
     var lat = Math.random() * (max_lat - min_lat) + min_lat;
@@ -63,5 +62,6 @@ const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, 
 
 simulation(19.197092, 19.577532, -99.424622, -98.888515, 30, 100, 50, 200, 200);
 
-//Pendiente generar el grafo con el cual correremos la simulación.
+//Pendiente generar un archivo csv con los tiempos de traslado de todos los nodos.
+// Posteriormente armar el grafo con las distancias
 
