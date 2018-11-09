@@ -82,6 +82,27 @@ class App extends React.Component {
         );
     }
 
+    const apiIsLoaded = (map,maps) => {
+        const directionsService = new maps.DirectionsService();
+        const directionsDisplay = new maps.DirectionsRenderer();
+        directionsService.route({
+          origin: 'Av 565 145, San Juan de Aragón II Secc, 07969 Ciudad de México, CDMX, Mexico',
+          destination: 'Piña MZ3 LT8, Ampliacion Lopez Portillo, 13400 Ciudad de México, CDMX, Mexico',
+          travelMode: 'DRIVING'
+        }, (response, status) => {
+          if (status === 'OK') {
+            directionsDisplay.setDirections(response);
+            console.log(response.routes[0].overview_path, 'Ruta')
+            const routePolyline = new google.maps.Polyline({
+              path: response.routes[0].overview_path
+            });
+            routePolyline.setMap(map);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+            }
+          });
+    };
+
     const listItems = this.state.myMarkers.map((transport) =>
       <li key={transport.id}>
         {transport.id} {transport.text} ubicacion:{transport.lat},{transport.lng}
@@ -97,7 +118,11 @@ class App extends React.Component {
           <ul>{listItems}</ul>
         </Right_Box>
         <div style={{ height: '100vh', width: '65%' }}>
-          <GoogleMapReact bootstrapURLKeys={{ key: api_key_maps}} defaultCenter={this.state.center} defaultZoom={this.state.zoom}>
+          <GoogleMapReact bootstrapURLKeys={{ key: api_key_maps}} 
+            defaultCenter={this.state.center} 
+            defaultZoom={this.state.zoom} 
+            yesIWantToUseGoogleMapApiInternals 
+            onGoogleApiLoaded={({ map, maps }) => apiIsLoaded(map, maps)}>
              {
             //Add a list of Markers to Your Map
             this.state.myMarkers.map( (each) =>
@@ -107,7 +132,7 @@ class App extends React.Component {
                 text = {each.text}
               />
             )
-          }          
+          }      
           </GoogleMapReact> 
         </div>
       </div>

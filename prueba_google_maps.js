@@ -34,7 +34,6 @@ var address_lookup = function(latlng,callback){
 }
 
 //https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
-
 var lat_long_lookup = function(address,callback){
   axios.get('https://maps.googleapis.com/maps/api/geocode/json',{
       params: {
@@ -59,7 +58,5 @@ var lat_long_lookup = function(address,callback){
 //   array.push(result.formatted_address);
 //   console.log(array)
 // });
-
-get_travel_distance_time("Av 565 145, San Juan de Aragón II Secc, 07969 Ciudad de México, CDMX, Mexico","Av. Lomas de San Juan 21, 52768 San Juan Yautepec, Méx., Mexico", console.log);
 
 module.exports = {lat_long_lookup:lat_long_lookup, get_travel_distance_time:get_travel_distance_time};
