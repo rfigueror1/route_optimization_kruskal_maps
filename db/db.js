@@ -49,6 +49,7 @@ module.exports = {locate_transport, create_transport, update_transport, show_ids
 // locate_transport(1, console.log);
 //show_ids_company('FirstTruckCompany', console.log);
 
-create_transport(19.434940, -99.195697, 'Ricardo Figueroa', 'FirstTruckCompany') 
-create_transport(19.434940, -99.205697, 'Alfredo Carrillo', 'FirstTruckCompany')
-create_transport(19.434940, -99.205697, 'Gary', 'FirstTruckCompany')
+// Pendiente crear otros camiones para minimizar distancias.
+// create_transport(19.434940, -99.195697, 'Ricardo Figueroa', 'FirstTruckCompany') 
+// create_transport(19.434940, -99.205697, 'Alfredo Carrillo', 'FirstTruckCompany')
+// create_transport(19.434940, -99.205697, 'Gary', 'FirstTruckCompany')

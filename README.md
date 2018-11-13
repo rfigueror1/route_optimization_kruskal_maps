@@ -9,7 +9,8 @@ Follow these instructions to start the application:
 2. Run `npm install`.
 3. Run `npm run compile`.
 4. Run `npm run start`.
-5. Visit localhost:3003 
+5. Visit localhost:3003
+6. After running the application server, please also run the following command `FLASK_APP=pyth_server.py flask run` to run the alternative python server to make distances calculations and optimizations.
 
 Curl commands to test REST API
 
