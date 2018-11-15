@@ -1,7 +1,9 @@
 var express = require('express');
 var app = express();
 var db = require('./../db/db.js')
+var calc_time = require('./../prueba_google_maps.js').get_travel_distance_time
 const bodyParser = require('body-parser'); //to parse json that comes in the body of the request
+
 
 app.use(express.static(__dirname + '/../dist'));
 
@@ -47,6 +49,22 @@ app.get('/trucks/companies/:company', function(req, res){
   })
 });
 
+app.get('/time', function(req, res){
+  var lat1 = req.body.lat1;
+  var lng1 = req.body.lng1;
+  var lat2 = req.body.lat2;
+  var lng2 = req.body.lng2;
+  var origins = lat1 + ',' + lng1
+  var destinations = lat2 + ',' + lng2
+  // calculate time using function from pruebla google maps
+  calc_time(origins, destinations, (err,results) => {
+    if(err){
+      console.log(err)
+    }else{
+      res.json(results);
+    }
+  })
+});
 
 app.put('/trucks:id', function(req, res){
   var id = Number(req.params.id.replace(':',''));
@@ -61,4 +79,4 @@ app.put('/trucks:id', function(req, res){
   })
 });
 
-app.listen(3003);
+app.listen(3004);

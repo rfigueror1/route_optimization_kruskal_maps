@@ -59,4 +59,7 @@ var lat_long_lookup = function(address,callback){
 //   console.log(array)
 // });
 
+
+// get_travel_distance_time('40.714224,-73.961452','40.714224,-73.931452',console.log)
+
 module.exports = {lat_long_lookup:lat_long_lookup, get_travel_distance_time:get_travel_distance_time};
