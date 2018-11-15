@@ -9,8 +9,9 @@ Follow these instructions to start the application:
 2. Run `npm install`.
 3. Run `npm run compile`.
 4. Run `npm run start`.
-5. Visit localhost:3003
+5. Visit localhost:3004
 6. After running the application server, please also run the following command `FLASK_APP=pyth_server.py flask run` to run the alternative python server to make distances calculations and optimizations.
+7. To generate clusters and combinations (distances between each node that is member of a cluster) run `curl -d '{}' -H "Content-Type: application/json" -X GET http://localhost:5000/alldistances`
 
 Curl commands to test REST API
 
