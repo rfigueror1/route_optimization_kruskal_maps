@@ -54,13 +54,21 @@ class App extends React.Component {
       company:'FirstTruckCompany',
       center: {lat: 19.434940, lng: -99.195697},
       zoom:12,
+      routes:[],
+      times:[]
     }
+    this.forceUpdateHandler = this.forceUpdateHandler.bind(this);
   }
+
+  forceUpdateHandler(){
+    this.forceUpdate();
+    console.log('se ha updateado')
+  };
 
   componentDidMount(){
     this.get_transports_from_company(this.state.componentDidMount);
+    this.get_routes_optimization();
   }
-
 
   //method to get all the transports from a given company
   get_transports_from_company(){
@@ -71,8 +79,20 @@ class App extends React.Component {
     console.log(err,'error fetching transports from company'));
   }
 
+  get_routes_optimization(){
+    //url is /groceries because by default is not specified. Try with ajax.
+    axios.get('http://localhost:5000/alldistances').then((results) => {
+      console.log(JSON.parse(results.data).map(function(value,index) { return value[0]; }), 'ruta optima');
+      this.setState({routes:JSON.parse(results.data).map(function(value,index) { return value[0]; })})
+      this.setState({times:JSON.parse(results.data).map(function(value,index) { return value[1]; })})
+      this.forceUpdateHandler()
+    }).catch(err => 
+    console.log(err,'error fetching transports from company'));
+  }
+
   render() {
 
+    console.log('render se llamo', this.state.routes.length)
     const Marker = ({text}) => {
         return (
               <div style={{fontWeight: 'normal'}, {fontSize: 10}}>
@@ -82,25 +102,59 @@ class App extends React.Component {
         );
     }
 
-    const apiIsLoaded = (map,maps) => {
-        const directionsService = new maps.DirectionsService();
-        const directionsDisplay = new maps.DirectionsRenderer();
-        directionsService.route({
-          origin: 'Av 565 145, San Juan de Aragón II Secc, 07969 Ciudad de México, CDMX, Mexico',
-          destination: 'Piña MZ3 LT8, Ampliacion Lopez Portillo, 13400 Ciudad de México, CDMX, Mexico',
-          travelMode: 'DRIVING'
-        }, (response, status) => {
-          if (status === 'OK') {
-            directionsDisplay.setDirections(response);
-            console.log(response.routes[0].overview_path, 'Ruta')
-            const routePolyline = new google.maps.Polyline({
-              path: response.routes[0].overview_path
+   var getRandomColor = () => {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+    }
+
+    var apiIsLoaded = (map,maps) => {
+        //Render each route
+        console.log('apis loadaed se llamo')
+        this.state.routes.map(function(route){
+          var delay_factor = 300
+          var route_color = getRandomColor()
+          route.map(function(origin_destination){
+            const directionsService = new maps.DirectionsService();
+            const directionsDisplay = new maps.DirectionsRenderer();
+            // console.log("'"+origin_destination[1].replace('[','').replace(']','')+"'", 'origin_destination')
+            //set up the latLang of the origin
+            var origin = origin_destination[0].replace('[','').replace(']','')+"'".split(',')
+
+            origin = Number(origin.split(',')[0]) + ', ' + Number(origin.split(',')[1].replace("'",''))
+
+            var destination = origin_destination[1].replace('[','').replace(']','')+"'".split(',')
+            destination = Number(destination.split(',')[0]) + ', ' + Number(destination.split(',')[1].replace("'",''));
+            
+            var request = {
+              origin:origin, 
+              destination:destination,
+              travelMode: maps.DirectionsTravelMode.DRIVING
+            };
+
+            setTimeout(function () {
+              directionsService.route(request
+              , (response, status) => {
+              if (status === 'OK') {
+                directionsDisplay.setDirections(response);
+                console.log(response.routes[0].overview_path, 'Ruta')
+                const routePolyline = new google.maps.Polyline({
+                  path: response.routes[0].overview_path,
+                  strokeColor: route_color,
+                  strokeWeight: 3
+              });
+                routePolyline.setMap(map);
+              } else {
+                window.alert('Directions request failed due to ' + status);
+              }
             });
-            routePolyline.setMap(map);
-          } else {
-            window.alert('Directions request failed due to ' + status);
-            }
-          });
+            }, delay_factor * 1000);
+          delay_factor++
+          })  
+        })
     };
 
     const listItems = this.state.myMarkers.map((transport) =>
@@ -117,12 +171,15 @@ class App extends React.Component {
           <SubTitle>Resumen de transportes</SubTitle>
           <ul>{listItems}</ul>
         </Right_Box>
-        <div style={{ height: '100vh', width: '65%' }}>
+        <div style={{ height: '100vh', width: '60%' }}>
+          {this.state.routes.length !== 0 ? 
           <GoogleMapReact bootstrapURLKeys={{ key: api_key_maps}} 
             defaultCenter={this.state.center} 
             defaultZoom={this.state.zoom} 
-            yesIWantToUseGoogleMapApiInternals 
-            onGoogleApiLoaded={({ map, maps }) => apiIsLoaded(map, maps)}>
+            yesIWantToUseGoogleMapApiInternals
+            onGoogleApiLoaded={({ map, maps }) => {
+              apiIsLoaded(map, maps)
+            }}>
              {
             //Add a list of Markers to Your Map
             this.state.myMarkers.map( (each) =>
@@ -134,6 +191,7 @@ class App extends React.Component {
             )
           }      
           </GoogleMapReact> 
+          : <div> Se esta calculando la ruta optima para los transportes</div>}
         </div>
       </div>
     );

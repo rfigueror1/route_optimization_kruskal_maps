@@ -49,7 +49,7 @@ var lat_long_lookup = function(address,callback){
 }
 
 //ejemplo
-// var prueba_coordenadas = '40.714224,-73.961452'
+// var prueba_coordenadas = '40.714224,-93.961452'
 
 // var array = []
 
@@ -58,8 +58,5 @@ var lat_long_lookup = function(address,callback){
 //   array.push(result.formatted_address);
 //   console.log(array)
 // });
-
-
-// get_travel_distance_time('40.714224,-73.961452','40.714224,-73.931452',console.log)
 
 module.exports = {lat_long_lookup:lat_long_lookup, get_travel_distance_time:get_travel_distance_time};
