@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import GoogleMapReact from 'google-map-react';
 var api_key_maps = require('./../../google_api_key.js').api_key_maps;
 import {TransportSummary} from './transport_summary.jsx'
-
+import ReactLoading from 'react-loading';
 import styled from 'styled-components'
 
 const Title = styled.h1`
-  font-size: 2em;
+  font-size: 1em;
   padding: 0.15em 0.5em;
   height: 2.0em;
   background:teal;
@@ -15,7 +15,7 @@ const Title = styled.h1`
 `;
 
 const SubTitle = styled.h2`
-  font-size: 1em;
+  font-size: 1.0em;
   padding: 0.15em 0.5em;
   height: 2.0em;
   background:#2f3542;
@@ -25,17 +25,32 @@ const SubTitle = styled.h2`
   margin: 0.15em;
 `;
 
+const List_item = styled.li`
+  font-size: 0.8em;
+  text-align: left;
+`;
+
 const Right_Box = styled.div`
-  font-size: 1.5em;
-  text-align: center;
+  text-align: left;
   color: black;
   float:right;
-  width: 23.0em;
+  width: 25.0em;
+  border: 1px solid;
+`;
+
+const Waiting_box = styled.div`
+  font-size: 1em;
+  text-align: center;
+  color: white;
+  background:#2f3542;
+  float:left;
+  width: 10.0em;
+  margin: 0.18em;
   border: 1px solid;
 `;
 
 const Transport_Box = styled.div`
-  font-size: 0.8em;
+  font-size: 0.3em;
   text-align: left;
   color: black;
   width: 23.0em;
@@ -55,7 +70,8 @@ class App extends React.Component {
       center: {lat: 19.434940, lng: -99.195697},
       zoom:12,
       routes:[],
-      times:[]
+      times:[],
+      items_to_deliver:[]
     }
     this.forceUpdateHandler = this.forceUpdateHandler.bind(this);
   }
@@ -68,6 +84,7 @@ class App extends React.Component {
   componentDidMount(){
     this.get_transports_from_company(this.state.componentDidMount);
     this.get_routes_optimization();
+    this.get_items_to_deliver()
   }
 
   //method to get all the transports from a given company
@@ -78,6 +95,15 @@ class App extends React.Component {
     }).catch(err => 
     console.log(err,'error fetching transports from company'));
   }
+
+  get_items_to_deliver(){
+    axios.get('/items').then((results) => {
+      console.log(JSON.stringify(results.data))
+      this.setState({items_to_deliver:results.data})
+    }).catch(err => 
+    console.log(err,'error fetching items to deliver'));
+  }
+
 
   get_routes_optimization(){
     //url is /groceries because by default is not specified. Try with ajax.
@@ -90,9 +116,13 @@ class App extends React.Component {
     console.log(err,'error fetching transports from company'));
   }
 
+  sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
   render() {
 
-    console.log('render se llamo', this.state.routes.length)
+    console.log('render se llamo', this.state.items_to_deliver)
     const Marker = ({text}) => {
         return (
               <div style={{fontWeight: 'normal'}, {fontSize: 10}}>
@@ -113,9 +143,11 @@ class App extends React.Component {
 
     var apiIsLoaded = (map,maps) => {
         //Render each route
-        console.log('apis loadaed se llamo')
         this.state.routes.map(function(route){
-          var delay_factor = 300
+          setTimeout(function (){
+            console.log('apis loadaed se llamo')
+          }, 500)
+          var delay_factor = 200
           var route_color = getRandomColor()
           route.map(function(origin_destination){
             const directionsService = new maps.DirectionsService();
@@ -135,6 +167,18 @@ class App extends React.Component {
               travelMode: maps.DirectionsTravelMode.DRIVING
             };
 
+            var lat = Number(origin.split(',')[0])
+            var lng = Number(origin.split(',')[1])
+            var myLatlng = new google.maps.LatLng(lat,lng);
+
+            console.log(lat, 'origin for marker')
+            var marker = new maps.Marker({
+              position: myLatlng,
+              title:"Hello World!"
+            });
+
+            marker.setMap(map);
+
             setTimeout(function () {
               directionsService.route(request
               , (response, status) => {
@@ -151,26 +195,34 @@ class App extends React.Component {
                 window.alert('Directions request failed due to ' + status);
               }
             });
-            }, delay_factor * 1000);
+            }, delay_factor * 2000);
           delay_factor++
           })  
         })
     };
 
-    const listItems = this.state.myMarkers.map((transport) =>
-      <li key={transport.id}>
+    const listTransports = this.state.myMarkers.map((transport) =>
+      <List_item key={transport.id}>
         {transport.id} {transport.text} ubicacion:{transport.lat},{transport.lng}
-      </li>
+      </List_item>
+    );
+
+    const listItems = this.state.items_to_deliver.map((item) =>
+      <List_item key={item}>
+        {item}
+      </List_item>
     );
 
     return (
       // Important! Always set the container height explicitly
       <div>
-        <Title> Leanit Fleet </Title>
-        <Right_Box>
-          <SubTitle>Resumen de transportes</SubTitle>
-          <ul>{listItems}</ul>
-        </Right_Box>
+        <Title> Kruskal route optimization using Google Maps API </Title>
+          <div>
+            <Right_Box>
+              <SubTitle>Transportes disponibles</SubTitle>
+              <ul>{listTransports}</ul>
+            </Right_Box>
+          </div>
         <div style={{ height: '100vh', width: '60%' }}>
           {this.state.routes.length !== 0 ? 
           <GoogleMapReact bootstrapURLKeys={{ key: api_key_maps}} 
@@ -191,7 +243,11 @@ class App extends React.Component {
             )
           }      
           </GoogleMapReact> 
-          : <div> Se esta calculando la ruta optima para los transportes</div>}
+          : <div>
+              <ReactLoading type='spinningBubbles' color='#0000FF' height={200} width={200} />
+              <Waiting_box> Se estan calculando las rutas </Waiting_box>
+            </div>
+        }
         </div>
       </div>
     );
@@ -200,3 +256,8 @@ class App extends React.Component {
 
 //<TransportSummary transports={this.state.myMarkers}/>
 export default App;
+
+            // <Right_Box>
+            //   <SubTitle>Artículos a entregar</SubTitle>
+            //   <ul>{listItems}</ul>
+            // </Right_Box>

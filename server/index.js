@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var db = require('./../db/db.js')
 var calc_time = require('./../prueba_google_maps.js').get_travel_distance_time
+var fs = require('fs');
 const bodyParser = require('body-parser'); //to parse json that comes in the body of the request
 
 
@@ -64,6 +65,20 @@ app.get('/time', function(req, res){
       res.json(results);
     }
   })
+});
+
+app.get('/items', function(req, res){
+  fs.readFile('./simulation/data.csv', (err, data) => {
+      if (err) throw err;
+      //pendiente transformar datos a arreglo
+      var array = data.toString('utf8').split('\n')
+      // split array items by address
+      array = array.map(function(address){
+        address = address.split('|')[0]
+        return address
+      })
+      res.json(array);
+    });
 });
 
 app.put('/trucks:id', function(req, res){
