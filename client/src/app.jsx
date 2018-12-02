@@ -2,9 +2,10 @@ import axios from 'axios';
 import React, { Component } from 'react';
 import GoogleMapReact from 'google-map-react';
 var api_key_maps = require('./../../google_api_key.js').api_key_maps;
-import {TransportSummary} from './transport_summary.jsx'
+import {Algorithms} from './algorithms.jsx';
 import ReactLoading from 'react-loading';
-import styled from 'styled-components'
+import styled from 'styled-components';
+import {Grid, Col, Row} from 'react-styled-flexboxgrid'
 
 const Title = styled.h1`
   font-size: 1em;
@@ -17,7 +18,7 @@ const Title = styled.h1`
 const SubTitle = styled.h2`
   font-size: 1.0em;
   padding: 0.15em 0.5em;
-  height: 2.0em;
+  height: 1.0em;
   background:#2f3542;
   color:white;
   text-align: left;
@@ -30,12 +31,18 @@ const List_item = styled.li`
   text-align: left;
 `;
 
+const div_item = styled.div`
+  font-size: 0.8em;
+  text-align: left;
+`;
+
 const Right_Box = styled.div`
   text-align: left;
   color: black;
   float:right;
-  width: 25.0em;
-  border: 1px solid;
+  width: 16.0em;
+  margin-top: 0.7em;
+  margin-right: 1.5em;
 `;
 
 const Waiting_box = styled.div`
@@ -71,7 +78,11 @@ class App extends React.Component {
       zoom:12,
       routes:[],
       times:[],
-      items_to_deliver:[]
+      items_to_deliver:[],
+      locations:[],
+      chosen_algorithm: '',
+      algorithms_available: ['K-means and Kruskal', 'Kirk Genetic Algorithm', 'Christofides'],
+      total_time: 0
     }
     this.forceUpdateHandler = this.forceUpdateHandler.bind(this);
   }
@@ -84,7 +95,8 @@ class App extends React.Component {
   componentDidMount(){
     this.get_transports_from_company(this.state.componentDidMount);
     this.get_routes_optimization();
-    this.get_items_to_deliver()
+    this.get_items_to_deliver();
+    this.get_locations();
   }
 
   //method to get all the transports from a given company
@@ -98,12 +110,19 @@ class App extends React.Component {
 
   get_items_to_deliver(){
     axios.get('/items').then((results) => {
-      console.log(JSON.stringify(results.data))
+      console.log(JSON.stringify(results.data), 'items to deliver')
       this.setState({items_to_deliver:results.data})
     }).catch(err => 
     console.log(err,'error fetching items to deliver'));
   }
 
+  get_locations(){
+    axios.get('/locations').then((results) => {
+      console.log(results.data, 'locations')
+      this.setState({locations:results.data})
+    }).catch(err => 
+    console.log(err,'error fetching locations'));
+  }
 
   get_routes_optimization(){
     //url is /groceries because by default is not specified. Try with ajax.
@@ -111,6 +130,9 @@ class App extends React.Component {
       console.log(JSON.parse(results.data).map(function(value,index) { return value[0]; }), 'ruta optima');
       this.setState({routes:JSON.parse(results.data).map(function(value,index) { return value[0]; })})
       this.setState({times:JSON.parse(results.data).map(function(value,index) { return value[1]; })})
+      console.log(this.state.times, 'times');
+      this.setState({total_time:parseFloat(this.state.times.reduce((a, b) => Number(a) + Number(b), 0)).toFixed(2)});
+      console.log(this.state.total_time, 'total time');
       this.forceUpdateHandler()
     }).catch(err => 
     console.log(err,'error fetching transports from company'));
@@ -143,6 +165,15 @@ class App extends React.Component {
 
     var apiIsLoaded = (map,maps) => {
         //Render each route
+        this.state.locations.map(function(location, index){
+          var myLatlng = new google.maps.LatLng(location[0],location[1]);
+          var marker = new maps.Marker({
+          position: myLatlng,
+          label:String(index)
+          });
+          marker.setMap(map);
+        })
+
         this.state.routes.map(function(route){
           setTimeout(function (){
             console.log('apis loadaed se llamo')
@@ -166,18 +197,6 @@ class App extends React.Component {
               destination:destination,
               travelMode: maps.DirectionsTravelMode.DRIVING
             };
-
-            var lat = Number(origin.split(',')[0])
-            var lng = Number(origin.split(',')[1])
-            var myLatlng = new google.maps.LatLng(lat,lng);
-
-            console.log(lat, 'origin for marker')
-            var marker = new maps.Marker({
-              position: myLatlng,
-              title:"Hello World!"
-            });
-
-            marker.setMap(map);
 
             setTimeout(function () {
               directionsService.route(request
@@ -217,13 +236,32 @@ class App extends React.Component {
       // Important! Always set the container height explicitly
       <div>
         <Title> Kruskal route optimization using Google Maps API </Title>
-          <div>
-            <Right_Box>
-              <SubTitle>Transportes disponibles</SubTitle>
+          <select>
+            <option selected value={this.state.algorithms_available[0]}>{this.state.algorithms_available[0]}</option>
+            <option value={this.state.algorithms_available[1]}>{this.state.algorithms_available[1]}</option>
+            <option value={this.state.algorithms_available[2]}>{this.state.algorithms_available[2]}</option>
+          </select>
+        <Right_Box>
+          <Grid>
+            <Row>
+              <Col xs={6} md={3}>
+              <SubTitle>Available transports</SubTitle>
               <ul>{listTransports}</ul>
-            </Right_Box>
-          </div>
-        <div style={{ height: '100vh', width: '60%' }}>
+              </Col>
+            </Row>
+            <Row>
+            <Col xs={6} md={3}>
+              <SubTitle>Total time of routes</SubTitle>
+              <div_item>
+                {this.state.times.length !== 0 ?    
+                  this.state.total_time:
+                ''}
+              </div_item>
+              </Col>
+            </Row>
+          </Grid>
+        </Right_Box>
+        <div style={{ height: '70vh', width: '70%' }}>  
           {this.state.routes.length !== 0 ? 
           <GoogleMapReact bootstrapURLKeys={{ key: api_key_maps}} 
             defaultCenter={this.state.center} 
@@ -257,7 +295,4 @@ class App extends React.Component {
 //<TransportSummary transports={this.state.myMarkers}/>
 export default App;
 
-            // <Right_Box>
-            //   <SubTitle>Artículos a entregar</SubTitle>
-            //   <ul>{listItems}</ul>
-            // </Right_Box>
+

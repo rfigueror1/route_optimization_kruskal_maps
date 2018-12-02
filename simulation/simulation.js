@@ -14,12 +14,14 @@ const max_lng = -98.888515
 var list_items = [];
 
 //todavia esta pendiente salvar en formato csv
+//Para correr simulacion con 90 cambiar nombre de archivos locations.csv data.csv
 
 const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, min_weight, max_weight, number_items) => {
 
   var list_of_items = [];
   var list_of_locations = [];
-  fs.appendFile('locations.csv', 'Lat|' + 'Long|'+ '\r\n', function (err) {
+  // Changed file locations to locations1
+  fs.appendFile('locations1.csv', 'Lat|' + 'Long|'+ '\r\n', function (err) {
     if (err) throw err;
     console.log('Saved!');
   });
@@ -30,7 +32,7 @@ const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, 
     list_of_locations.push(lat_long);
     console.log(lat_long)
 
-    fs.appendFile('locations.csv', lat+'|'+longt + '\r\n', function (err) {
+    fs.appendFile('locations1.csv', lat+'|'+longt + '\r\n', function (err) {
         if (err) throw err;
         console.log('Saved!');
     });
@@ -52,7 +54,7 @@ const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, 
     console.log(list_of_items)
   }
 	Promise.all(list_of_items).then(function(item) {
-    fs.appendFile('data.csv', 'Address|' + 'Volume|'+ 'Weight' + '\r\n', function (err) {
+    fs.appendFile('data1.csv', 'Address|' + 'Volume|'+ 'Weight' + '\r\n', function (err) {
         if (err) throw err;
         console.log('Saved!');
     });
@@ -64,7 +66,7 @@ const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, 
 	  	item1.volume = volume;
 	  	item1.weight = weight;
      	// list_items.push
-     	fs.appendFile('data.csv', item1.address+'|'+item1.volume+'|'+ item1.weight + '\r\n', function (err) {
+     	fs.appendFile('data1.csv', item1.address+'|'+item1.volume+'|'+ item1.weight + '\r\n', function (err) {
   			if (err) throw err;
   			console.log('Saved!');
 		  });
@@ -72,7 +74,7 @@ const simulation = (min_lat, max_lat, min_lng, max_lng, min_volume, max_volume, 
   })
 }
 
-simulation(19.197092, 19.577532, -99.424622, -98.888515, 30, 100, 50, 200, 90);
+simulation(19.197092, 19.577532, -99.424622, -98.888515, 30, 100, 50, 200, 500);
 
 //Pendiente generar un archivo csv con los tiempos de traslado de todos los nodos.
 // Posteriormente armar el grafo con las distancias

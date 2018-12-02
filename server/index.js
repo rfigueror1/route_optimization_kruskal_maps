@@ -81,6 +81,20 @@ app.get('/items', function(req, res){
     });
 });
 
+app.get('/locations', function(req, res){
+  fs.readFile('./simulation/locations.csv', (err, data) => {
+      if (err) throw err;
+      //pendiente transformar datos a arreglo
+      var array = data.toString('utf8').split('\n')
+      // split array items by address
+      array = array.map(function(location){
+        location = location.split('|')
+        return location
+      })
+      res.json(array);
+    });
+});
+
 app.put('/trucks:id', function(req, res){
   var id = Number(req.params.id.replace(':',''));
   var lat = req.body.lat;
